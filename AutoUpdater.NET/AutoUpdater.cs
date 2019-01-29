@@ -186,11 +186,19 @@ namespace AutoUpdaterDotNET
         /// </summary>
         public static event CheckForUpdateEventHandler CheckForUpdateEvent;
 
-        /// <summary>
-        ///     A delegate type for hooking up parsing logic.
-        /// </summary>
-        /// <param name="args">An object containing the AppCast file received from server.</param>
-        public delegate void ParseUpdateInfoHandler(ParseUpdateInfoEventArgs args);
+		/// <summary>
+		/// On WebRequest Create
+		/// </summary>
+		/// <param name="args"></param>
+		public delegate void WebRequestInitializationHandler( WebRequestInitializationEventArgs args );
+
+		public static event WebRequestInitializationHandler WebRequestInitializationEvent;
+
+		/// <summary>
+		///     A delegate type for hooking up parsing logic.
+		/// </summary>
+		/// <param name="args">An object containing the AppCast file received from server.</param>
+		public delegate void ParseUpdateInfoHandler(ParseUpdateInfoEventArgs args);
 
         /// <summary>
         ///     An event that clients can use to be notified whenever the AppCast file needs parsing.
@@ -358,12 +366,15 @@ namespace AutoUpdaterDotNET
             }
 
             webRequest.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+			
             if (Proxy != null)
             {
                 webRequest.Proxy = Proxy;
             }
 
-            WebResponse webResponse;
+			WebRequestInitializationEvent?.Invoke( new WebRequestInitializationEventArgs( webRequest ) );
+
+			WebResponse webResponse;
 
             try
             {
