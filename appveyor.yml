@@ -1,6 +1,6 @@
-version: 1.0.0.{build}
+version: 1.0.1.{build}
 environment:
-  my_version: 1.0.0
+  my_version: 1.0.1
 skip_branch_with_pr: true
 image: Visual Studio 2017
 clone_folder: C:\Projects\AutoUpdater.NET.CredentialsFix
@@ -20,11 +20,10 @@ install:
 artifacts:
 - path: AutoUpdater.NET.CredentialsFix-%my_version%.zip
 - path: AutoUpdater.NET.CredentialsFix.%my_version%.nupkg
-- path: AutoUpdater.NET.CredentialsFix.nupkg
 
 deploy:
   - provider: NuGet
     api_key:
-      secure: qSuqVYFN4uxZkdb16MJ1vHqezA7T+wxhTlqxobnxPzvBtwagCDyiZiwPgknvRjII
-    artifact: /.*\.symbols\.nupkg/
+      secure: kDRrYR4wIVXjYo4HedTcFHPHzjSE786qogUzzy8ELT7Spdsjo3KG9RTfL4Lo484a
+    artifact: AutoUpdater.NET.CredentialsFix.%my_version%.nupkg
 
