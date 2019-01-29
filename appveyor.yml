@@ -1,6 +1,6 @@
-version: 1.5.0.{build}
+version: 1.0.0.{build}
 environment:
-  my_version: 1.5.0
+  my_version: 1.0.0
 skip_branch_with_pr: true
 image: Visual Studio 2017
 clone_folder: C:\Projects\AutoUpdater.NET.CredentialsFix
