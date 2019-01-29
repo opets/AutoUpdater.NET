@@ -1,8 +1,6 @@
 version: 1.5.0.{build}
 environment:
   my_version: 1.5.0
-  my_secret:
-    secure: vbPRaZLQYpGPr4BrZZ4p6TofpSZMud+FKtlpqjgO8aA=
 skip_branch_with_pr: true
 image: Visual Studio 2017
 clone_folder: C:\Projects\AutoUpdater.NET.CredentialsFix
@@ -10,8 +8,6 @@ build: off
 install:
 - nuget install secure-file -ExcludeVersion
 - cmd: nuget restore
-- secure-file\tools\secure-file -decrypt "C:\Projects\AutoUpdater.NET.CredentialsFix\ZipExtractor\ZipExtractor.snk.enc" -secret %my_secret%
-- secure-file\tools\secure-file -decrypt "C:\Projects\AutoUpdater.NET.CredentialsFix\AutoUpdater.NET\AutoUpdater.NET.snk.enc" -secret %my_secret%
 - msbuild "C:\Projects\AutoUpdater.NET.CredentialsFix\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 - msbuild "C:\Projects\AutoUpdater.NET.CredentialsFix\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 - msbuild "C:\Projects\AutoUpdater.NET.CredentialsFix\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release-NET35 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
