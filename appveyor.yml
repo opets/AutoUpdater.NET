@@ -21,10 +21,6 @@ artifacts:
 - path: AutoUpdater.NET-%my_version%.zip
 - path: Autoupdater.NET.Official.%my_version%.nupkg
 
-nuget:
-  account_feed: true
-  project_feed: true
-
 deploy:
   - provider: NuGet
     api_key:
