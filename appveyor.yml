@@ -21,11 +21,13 @@ artifacts:
 - path: AutoUpdater.NET-%my_version%.zip
 - path: Autoupdater.NET.Official.%my_version%.nupkg
 
+nuget:
+  account_feed: true
+  project_feed: true
+
 deploy:
-- provider: NuGet
-  api_key:
-    secure: Vr4wxBYimrbTsTEZmGUl9EXOmqt5EoB7t6SWskToIRVmzsK0oY3Ne4VYH9c2nu5x
-  skip_symbols: false
-  artifact: Autoupdater.NET.Official.%my_version%.nupkg
-  on:
-    branch: master                 # release from master branch only
+  - provider: NuGet
+    api_key:
+      secure: qSuqVYFN4uxZkdb16MJ1vHqezA7T+wxhTlqxobnxPzvBtwagCDyiZiwPgknvRjII
+    artifact: /.*\.symbols\.nupkg/
+
