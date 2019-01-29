@@ -63,7 +63,7 @@
     <DocumentationFile>build\lib\net40\AutoUpdater.NET.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>AutoUpdater.NET.CredentialsFix.pfx</AssemblyOriginatorKeyFile>
