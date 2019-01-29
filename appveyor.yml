@@ -14,13 +14,13 @@ install:
 - msbuild "C:\Projects\AutoUpdater.NET.CredentialsFix\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release-NET35 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 - msbuild "C:\Projects\AutoUpdater.NET.CredentialsFix\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release-NET40 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 - msbuild "C:\Projects\AutoUpdater.NET.CredentialsFix\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release-NET40 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-- nuget pack "C:\Projects\AutoUpdater.NET.CredentialsFix\AutoUpdater.NET\build\Autoupdater.NET.Official.nuspec"
-- cmd: 7z a AutoUpdater.NET-%my_version%.zip %APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\build\lib\*
+- nuget pack "C:\Projects\AutoUpdater.NET.CredentialsFix\AutoUpdater.NET\build\AutoUpdater.NET.CredentialsFix.nuspec"
+- cmd: 7z a AutoUpdater.NET.CredentialsFix-%my_version%.zip %APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\build\lib\*
 
 artifacts:
-- path: AutoUpdater.NET-%my_version%.zip
-- path: Autoupdater.NET.Official.%my_version%.nupkg
-- path: Autoupdater.NET.Official.nupkg
+- path: AutoUpdater.NET.CredentialsFix-%my_version%.zip
+- path: AutoUpdater.NET.CredentialsFix.%my_version%.nupkg
+- path: AutoUpdater.NET.CredentialsFix.nupkg
 
 deploy:
   - provider: NuGet

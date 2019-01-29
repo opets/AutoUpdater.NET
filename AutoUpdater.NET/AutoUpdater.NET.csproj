@@ -311,7 +311,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AutoUpdater.NET.CredentialsFix.pfx" />
-    <None Include="build\Autoupdater.NET.Official.nuspec">
+    <None Include="build\AutoUpdater.NET.CredentialsFix.nuspec">
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config">
