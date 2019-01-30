@@ -41,7 +41,9 @@ namespace AutoUpdaterDotNET
                 CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore)
             };
 
-            if (AutoUpdater.Proxy != null)
+			AutoUpdater.DoWebClientInitialization( _webClient );
+
+			if( AutoUpdater.Proxy != null)
             {
                 _webClient.Proxy = AutoUpdater.Proxy;
             }
@@ -317,7 +319,7 @@ namespace AutoUpdaterDotNET
         /// <inheritdoc />
         protected override WebResponse GetWebResponse(WebRequest request, IAsyncResult result)
         {
-            WebResponse webResponse = base.GetWebResponse(request, result);
+			WebResponse webResponse = base.GetWebResponse(request, result);
             ResponseUri = webResponse.ResponseUri;
             return webResponse;
         }

@@ -165,7 +165,14 @@ namespace AutoUpdaterDotNET
         /// </summary>
         public static RemindLaterFormat RemindLaterTimeSpan = RemindLaterFormat.Days;
 
-        /// <summary>
+		/// <summary>
+		/// SecurityProtocolType.Tls   | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12  
+		/// (SecurityProtocolType) 192 | (SecurityProtocolType) 768 | (SecurityProtocolType) 3072
+		/// </summary>
+		public static SecurityProtocolType SecurityProtocols = (SecurityProtocolType) 192 |
+															   (SecurityProtocolType) 768 | (SecurityProtocolType) 3072;
+
+		/// <summary>
         ///     A delegate type to handle how to exit the application after update is downloaded.
         /// </summary>
         public delegate void ApplicationExitEventHandler();
@@ -194,6 +201,12 @@ namespace AutoUpdaterDotNET
 
 		public static event WebRequestInitializationHandler WebRequestInitializationEvent;
 
+		public delegate void WebClientInitializationHandler( WebClientInitializationEventArgs args );
+
+		public static event WebClientInitializationHandler WebClientInitializationEvent;
+
+		internal static void DoWebClientInitialization( WebClient webClient) => WebClientInitializationEvent?.Invoke( new WebClientInitializationEventArgs( webClient ) );
+
 		/// <summary>
 		///     A delegate type for hooking up parsing logic.
 		/// </summary>
@@ -221,8 +234,7 @@ namespace AutoUpdaterDotNET
         /// <param name="myAssembly">Assembly to use for version checking.</param>
         public static void Start(String appCast, Assembly myAssembly = null)
         {
-            ServicePointManager.SecurityProtocol |= (SecurityProtocolType) 192 |
-                                                    (SecurityProtocolType) 768 | (SecurityProtocolType) 3072;
+            ServicePointManager.SecurityProtocol |= SecurityProtocols;
 
             if (Mandatory && _remindLaterTimer != null)
             {
