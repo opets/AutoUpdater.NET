@@ -90,8 +90,6 @@ namespace ZipExtractor
 
 					using( ZipStorer zip = ZipStorer.Open( args[1], FileAccess.Read ) ) {
 
-						zip.FileName = args[1];
-
 						// Read the central directory collection.
 						List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
 
