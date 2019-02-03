@@ -18,10 +18,47 @@ namespace ZipExtractor
             InitializeComponent();
         }
 
-        private void FormMain_Shown(object sender, EventArgs e)
+		protected override void OnLoad( EventArgs e ) {
+			base.OnLoad( e );
+			string[] args = Environment.GetCommandLineArgs();
+
+			foreach( string s in args ) {
+				if( s.IndexOf( "silent", StringComparison.OrdinalIgnoreCase ) >= 0 ) {
+					this.Hide();
+					this.WindowState = FormWindowState.Minimized;
+					this.Visible = false; // Hide form window.
+					this.ShowInTaskbar = false; // Remove from taskbar.
+					this.Opacity = 0;
+				}
+			}
+		}
+
+		protected override void OnClosed( EventArgs e ) {
+			base.OnClosed( e );
+
+			string[] args = Environment.GetCommandLineArgs();
+			var processStartInfo = new ProcessStartInfo {
+				FileName = "del",
+				UseShellExecute = true,
+				Arguments = args[1]
+			};
+			Process.Start( processStartInfo );
+		}
+
+		private void FormMain_Shown(object sender, EventArgs e)
         {
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length >= 3)
+			foreach( string s in args ) {
+				if( s.IndexOf( "silent", StringComparison.OrdinalIgnoreCase ) >= 0 ) {
+					this.Hide();
+					this.WindowState = FormWindowState.Minimized;
+					this.Visible = false; // Hide form window.
+					this.ShowInTaskbar = false; // Remove from taskbar.
+					this.Opacity = 0;
+				}
+			}
+
+			if( args.Length >= 3)
             {
                 foreach (var process in Process.GetProcesses())
                 {
@@ -50,29 +87,35 @@ namespace ZipExtractor
                 {
                     var path = Path.GetDirectoryName(args[2]);
 
-                    // Open an existing zip file for reading.
-                    ZipStorer zip = ZipStorer.Open(args[1], FileAccess.Read);
 
-                    // Read the central directory collection.
-                    List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
+					using( ZipStorer zip = ZipStorer.Open( args[1], FileAccess.Read ) ) {
 
-                    for (var index = 0; index < dir.Count; index++)
-                    {
-                        if (_backgroundWorker.CancellationPending)
-                        {
-                            eventArgs.Cancel = true;
-                            zip.Close();
-                            return;
-                        }
+						zip.FileName = args[1];
 
-                        ZipStorer.ZipFileEntry entry = dir[index];
-                        zip.ExtractFile(entry, Path.Combine(path, entry.FilenameInZip));
-                        _backgroundWorker.ReportProgress((index + 1) * 100 / dir.Count,
-                            string.Format(Resources.CurrentFileExtracting, entry.FilenameInZip));
-                    }
+						// Read the central directory collection.
+						List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
 
-                    zip.Close();
-                };
+	                    for (var index = 0; index < dir.Count; index++)
+	                    {
+	                        if (_backgroundWorker.CancellationPending)
+	                        {
+	                            eventArgs.Cancel = true;
+	                            zip.Close();
+	                            return;
+	                        }
+
+	                        ZipStorer.ZipFileEntry entry = dir[index];
+	                        zip.ExtractFile(entry, Path.Combine(path, entry.FilenameInZip));
+	                        _backgroundWorker.ReportProgress((index + 1) * 100 / dir.Count,
+	                            string.Format(Resources.CurrentFileExtracting, entry.FilenameInZip));
+	                    }
+
+						zip.Close();
+					}
+
+					
+
+				};
 
                 _backgroundWorker.ProgressChanged += (o, eventArgs) =>
                 {
@@ -85,8 +128,8 @@ namespace ZipExtractor
                     if (!eventArgs.Cancelled)
                     {
                         labelInformation.Text = @"Finished";
-                        try
-                        {
+
+						try {
                             ProcessStartInfo processStartInfo = new ProcessStartInfo(args[2]);
                             if (args.Length > 3)
                             {
@@ -94,7 +137,8 @@ namespace ZipExtractor
                             }
 
                             Process.Start(processStartInfo);
-                        }
+
+						}
                         catch (Win32Exception exception)
                         {
                             if (exception.NativeErrorCode != 1223)

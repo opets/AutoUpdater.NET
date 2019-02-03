@@ -21,12 +21,13 @@ namespace AutoUpdaterDotNET
         private MyWebClient _webClient;
 
         private DateTime _startedAt;
+		private Timer m_timerDelayOpenDlg;
 
-        public DownloadUpdateDialog(string downloadURL)
+		public DownloadUpdateDialog(string downloadURL)
         {
             InitializeComponent();
 
-            _downloadURL = downloadURL;
+			_downloadURL = downloadURL;
 
             if (AutoUpdater.Mandatory && AutoUpdater.UpdateMode == Mode.ForcedDownload)
             {
@@ -36,7 +37,20 @@ namespace AutoUpdaterDotNET
 
         private void DownloadUpdateDialogLoad(object sender, EventArgs e)
         {
-            _webClient = new MyWebClient
+			if( AutoUpdater.DelayOpenDownloadDialog > 0 ) {
+				this.Hide();
+				this.Opacity = 0;
+
+				m_timerDelayOpenDlg = new Timer();
+				m_timerDelayOpenDlg.Interval = AutoUpdater.DelayOpenDownloadDialog;
+				m_timerDelayOpenDlg.Tick += ( sender1, args1 ) => {
+					this.Show();
+					AutoUpdater.DelayOpenDownloadDialog = 0;
+				};
+				m_timerDelayOpenDlg.Start();
+			}
+
+			_webClient = new MyWebClient
             {
                 CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore)
             };
@@ -93,7 +107,7 @@ namespace AutoUpdaterDotNET
                 }
             }
 
-            labelSize.Text = $@"{BytesToString(e.BytesReceived)} / {BytesToString(e.TotalBytesToReceive)}";
+			labelSize.Text = $@"{BytesToString(e.BytesReceived)} / {BytesToString(e.TotalBytesToReceive)}";
             progressBar.Value = e.ProgressPercentage;
         }
 
@@ -188,7 +202,12 @@ namespace AutoUpdaterDotNET
                     arguments.Append(i.Equals(args.Length - 1) ? "\"" : " ");
                 }
 
-                processStartInfo = new ProcessStartInfo
+				if( AutoUpdater.DelayOpenDownloadDialog > 0 ) {
+					arguments.Append( " silent" );
+				}
+
+
+				processStartInfo = new ProcessStartInfo
                 {
                     FileName = installerPath,
                     UseShellExecute = true,
@@ -216,7 +235,7 @@ namespace AutoUpdaterDotNET
             try
             {
                 Process.Start(processStartInfo);
-            }
+			}
             catch (Win32Exception exception)
             {
                 _webClient = null;

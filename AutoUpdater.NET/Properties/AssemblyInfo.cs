@@ -5,12 +5,14 @@ using System.Resources;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AutoUpdater.NET")]
-[assembly: AssemblyDescription("AutoUpdater.NET is a class library that allows .NET developers to easily add auto update functionality to their classic desktop application projects.")]
+[assembly: AssemblyTitle( "AutoUpdater.NET.CredentialsFix" )]
+[assembly: AssemblyDescription( "AutoUpdater.NET.CredentialsFix - Fork of https://github.com/ravibpatel/AutoUpdater.NET, to allow to override WebRequest properties. " +
+								"AutoUpdater.NET is a class library that allows .NET developers to easily add auto update functionality " +
+								"to their classic desktop application projects." )]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("RBSoft")]
-[assembly: AssemblyProduct("AutoUpdater.NET")]
-[assembly: AssemblyCopyright("Copyright © 2012-2019 RBSoft")]
+[assembly: AssemblyCompany("Oleksandr Pets")]
+[assembly: AssemblyProduct("AutoUpdater.NET.CredentialsFix")]
+[assembly: AssemblyCopyright("Copyright © 2019-2099")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +22,7 @@ using System.Resources;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a4037a6f-fdf7-46c8-a303-c3c4fcddb015")]
+[assembly: Guid("ccc37a6f-fdf7-46c8-a303-c3c4fcddb015")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,6 +34,6 @@ using System.Resources;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.5.0.0")]
-[assembly: AssemblyFileVersion("1.5.0.0")]
+[assembly: AssemblyVersion("1.0.4.44")]
+[assembly: AssemblyFileVersion("1.0.4.44")]
 [assembly: NeutralResourcesLanguageAttribute("en")]

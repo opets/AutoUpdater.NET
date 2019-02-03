@@ -82,7 +82,10 @@ namespace AutoUpdaterDotNET
 
         internal static bool IsWinFormsApplication;
 
-        internal static bool Running;
+        /// <summary>
+        /// 
+        /// </summary>
+        public static bool Running;
 
         /// <summary>
         ///     Set it to folder path where you want to download the update file. If not provided then it defaults to Temp folder.
@@ -171,11 +174,15 @@ namespace AutoUpdaterDotNET
 		/// </summary>
 		public static SecurityProtocolType SecurityProtocols = (SecurityProtocolType) 192 |
 															   (SecurityProtocolType) 768 | (SecurityProtocolType) 3072;
+		/// <summary>
+		/// Delay in msec before show download dialog
+		/// </summary>
+		public static int DelayOpenDownloadDialog = 0;
 
 		/// <summary>
-        ///     A delegate type to handle how to exit the application after update is downloaded.
-        /// </summary>
-        public delegate void ApplicationExitEventHandler();
+		///     A delegate type to handle how to exit the application after update is downloaded.
+		/// </summary>
+		public delegate void ApplicationExitEventHandler();
 
         /// <summary>
         ///     An event that developers can use to exit the application gracefully.
@@ -199,10 +206,20 @@ namespace AutoUpdaterDotNET
 		/// <param name="args"></param>
 		public delegate void WebRequestInitializationHandler( WebRequestInitializationEventArgs args );
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public static event WebRequestInitializationHandler WebRequestInitializationEvent;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="args"></param>
 		public delegate void WebClientInitializationHandler( WebClientInitializationEventArgs args );
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public static event WebClientInitializationHandler WebClientInitializationEvent;
 
 		internal static void DoWebClientInitialization( WebClient webClient) => WebClientInitializationEvent?.Invoke( new WebClientInitializationEventArgs( webClient ) );
@@ -711,7 +728,7 @@ namespace AutoUpdaterDotNET
 
             try
             {
-                return downloadDialog.ShowDialog().Equals(DialogResult.OK);
+				return downloadDialog.ShowDialog().Equals(DialogResult.OK);
             }
             catch (TargetInvocationException)
             {
