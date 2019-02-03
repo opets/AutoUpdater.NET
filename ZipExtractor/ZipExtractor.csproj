@@ -133,7 +133,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy ZipExtractor.exe ..\..\..\..\AutoUpdater.NET\Resources\ZipExtractor.exe /H /Y /C /I
-xcopy ZipExtractor.exe.config ..\..\..\..\AutoUpdater.NET\Resources\ZipExtractor.exe.config /H /Y /C /I</PostBuildEvent>
+    <PostBuildEvent>F|xcopy ZipExtractor.exe ..\..\..\..\AutoUpdater.NET\Resources\ZipExtractor.exe /H /Y /C /F
+F|xcopy ZipExtractor.exe.config ..\..\..\..\AutoUpdater.NET\Resources\ZipExtractor.exe.config /H /Y /C /F</PostBuildEvent>
   </PropertyGroup>
 </Project>
