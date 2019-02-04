@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Reflection;
 using System.Windows.Forms;
 using ZipExtractor.Properties;
 
@@ -12,10 +13,12 @@ namespace ZipExtractor
     public partial class FormMain : Form
     {
         private BackgroundWorker _backgroundWorker;
+		private static string m_logPath;
 
-        public FormMain()
+		public FormMain()
         {
-            InitializeComponent();
+			InitLog();
+			InitializeComponent();
         }
 
 		protected override void OnLoad( EventArgs e ) {
@@ -24,6 +27,7 @@ namespace ZipExtractor
 
 			foreach( string s in args ) {
 				if( s.IndexOf( "silent", StringComparison.OrdinalIgnoreCase ) >= 0 ) {
+					WriteLogMessage( $"INFO: running extractor in silent mode" );
 					this.Hide();
 					this.WindowState = FormWindowState.Minimized;
 					this.Visible = false; // Hide form window.
@@ -36,13 +40,19 @@ namespace ZipExtractor
 		protected override void OnClosed( EventArgs e ) {
 			base.OnClosed( e );
 
-			string[] args = Environment.GetCommandLineArgs();
-			var processStartInfo = new ProcessStartInfo {
-				FileName = "del",
-				UseShellExecute = true,
-				Arguments = args[1]
-			};
-			Process.Start( processStartInfo );
+			try {
+				string[] args = Environment.GetCommandLineArgs();
+				WriteLogMessage( $"INFO: removing archive file: {args[1]}" );
+				var processStartInfo = new ProcessStartInfo {
+					FileName = "del",
+					UseShellExecute = true,
+					Arguments = args[1]
+				};
+				Process.Start( processStartInfo );
+
+			} catch( Exception ex ) {
+				WriteLogMessage( $"ERROR: removing archive file: {ex.Message} - {ex.InnerException?.Message} - {ex.StackTrace}" );
+			}
 		}
 
 		private void FormMain_Shown(object sender, EventArgs e)
@@ -60,21 +70,22 @@ namespace ZipExtractor
 
 			if( args.Length >= 3)
             {
-                foreach (var process in Process.GetProcesses())
-                {
-                    try
-                    {
-                        if (process.MainModule.FileName.Equals(args[2]))
-                        {
-                            labelInformation.Text = @"Waiting for application to Exit...";
-                            process.WaitForExit();
-                        }
-                    }
-                    catch (Exception exception)
-                    {
-                        Debug.WriteLine(exception.Message);
-                    }
-                }
+      //          foreach (var process in Process.GetProcesses())
+      //          {
+      //              try
+      //              {
+      //                  if (process.MainModule.FileName.Equals(args[2]))
+      //                  {
+						//	WriteLogMessage( $"INFO: Waiting for application to Exit..." );
+      //                      labelInformation.Text = @"Waiting for application to Exit...";
+      //                      process.WaitForExit();
+      //                  }
+      //              }
+      //              catch (Exception ex)
+      //              {
+						//WriteLogMessage( $"ERROR: {ex.Message} - {ex.InnerException?.Message} - {ex.StackTrace}" );
+      //              }
+      //          }
 
                 // Extract all the files.
                 _backgroundWorker = new BackgroundWorker
@@ -85,34 +96,37 @@ namespace ZipExtractor
 
                 _backgroundWorker.DoWork += (o, eventArgs) =>
                 {
-                    var path = Path.GetDirectoryName(args[2]);
+					try {
 
+						var path = Path.GetDirectoryName(args[2]);
 
-					using( ZipStorer zip = ZipStorer.Open( args[1], FileAccess.Read ) ) {
+						using( ZipStorer zip = ZipStorer.Open( args[1], FileAccess.Read ) ) {
 
-						// Read the central directory collection.
-						List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
+							// Read the central directory collection.
+							List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
 
-	                    for (var index = 0; index < dir.Count; index++)
-	                    {
-	                        if (_backgroundWorker.CancellationPending)
-	                        {
-	                            eventArgs.Cancel = true;
-	                            zip.Close();
-	                            return;
-	                        }
+		                    for (var index = 0; index < dir.Count; index++)
+		                    {
+		                        if (_backgroundWorker.CancellationPending)
+		                        {
+		                            eventArgs.Cancel = true;
+		                            zip.Close();
+		                            return;
+		                        }
 
-	                        ZipStorer.ZipFileEntry entry = dir[index];
-	                        zip.ExtractFile(entry, Path.Combine(path, entry.FilenameInZip));
-	                        _backgroundWorker.ReportProgress((index + 1) * 100 / dir.Count,
-	                            string.Format(Resources.CurrentFileExtracting, entry.FilenameInZip));
-	                    }
+		                        ZipStorer.ZipFileEntry entry = dir[index];
+		                        zip.ExtractFile(entry, Path.Combine(path, entry.FilenameInZip));
+		                        _backgroundWorker.ReportProgress((index + 1) * 100 / dir.Count,
+		                            string.Format(Resources.CurrentFileExtracting, entry.FilenameInZip));
+		                    }
 
-						zip.Close();
+							zip.Close();
+						}
+
+					} catch( Exception ex ) {
+						WriteLogMessage( $"ERROR: {ex.Message} - {ex.InnerException?.Message} - {ex.StackTrace}" );
+						eventArgs.Cancel = true;
 					}
-
-					
-
 				};
 
                 _backgroundWorker.ProgressChanged += (o, eventArgs) =>
@@ -126,26 +140,34 @@ namespace ZipExtractor
                     if (!eventArgs.Cancelled)
                     {
                         labelInformation.Text = @"Finished";
+						string arguments = ( args.Length > 3 ) ? args[3] : null;
+						WriteLogMessage( $"INFO: Finished. Run Application {args[2]} {arguments}" );
 
 						try {
                             ProcessStartInfo processStartInfo = new ProcessStartInfo(args[2]);
-                            if (args.Length > 3)
+                            if ( arguments != null)
                             {
-                                processStartInfo.Arguments = args[3];
+                                processStartInfo.Arguments = arguments;
                             }
 
+							WriteLogMessage( $"INFO: Finished" );
                             Process.Start(processStartInfo);
 
 						}
-                        catch (Win32Exception exception)
+                        catch (Win32Exception ex)
                         {
-                            if (exception.NativeErrorCode != 1223)
-                                throw;
-                        }
+							if( ex.NativeErrorCode != 1223)
+							{
+								WriteLogMessage( $"ERROR: {ex.Message} - {ex.InnerException?.Message} - {ex.StackTrace}" );
+							}
 
-                        Application.Exit();
-                    }
-                };
+						}
+
+						Application.Exit();
+                    } else {
+						WriteLogMessage( $"INFO: Cancelled" );
+					}
+				};
                 _backgroundWorker.RunWorkerAsync();
             }
         }
@@ -154,5 +176,30 @@ namespace ZipExtractor
         {
             _backgroundWorker?.CancelAsync();
         }
-    }
+
+		private static void InitLog() {
+			try {
+				string currentDirectoryPath = Path.GetDirectoryName( Assembly.GetEntryAssembly().Location ) ?? string.Empty;
+				string logDirectoryPath = Path.Combine( currentDirectoryPath, "logs" );
+				m_logPath = Path.Combine( logDirectoryPath, "ZipExtractor.txt" );
+
+				if( !Directory.Exists( logDirectoryPath ) ) {
+					Directory.CreateDirectory( logDirectoryPath );
+				}
+
+				if( !File.Exists( m_logPath ) ) {
+					File.WriteAllText( m_logPath, string.Empty );
+				}
+			} catch( Exception e ) {
+				m_logPath = null;
+			}
+		}
+
+		static void WriteLogMessage( string message ) {
+			if( m_logPath == null ) {
+				return;
+			}
+			File.AppendAllText( m_logPath, $@"{DateTime.Now}	:{message}{Environment.NewLine}" );
+		}
+	}
 }
